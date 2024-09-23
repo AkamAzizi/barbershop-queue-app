@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Barbershop Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4 text-center" style="max-width: 800px;">
+    <div class="header">
+        <h1 class="display-4" style="font-family: 'Permanent Marker', cursive; color: #000000;">Välkommen till Strängnäs Salong</h1>
+    </div>
+
+    {% if user.is_authenticated %}
+        <form method="POST" action="{{ url_for('views.enter_queue') }}" class="mb-4">
+            <button type="submit" class="btn btn-success" style="background-color: #0ca339; border-color: #016935;">Enter Queue</button>
+        </form>
+    {% else %}
+        <p>You need to <a href="{{ url_for('auth.login') }}">log in</a> to join the queue.</p>
+    {% endif %}
+
+    <h4 class="mt-5" style="font-family: 'Roboto', sans-serif; color: #333;">Aktuell drop-in-kö:</h4>
+    <ul class="list-group">
+        {% for entry in queue_entries %}
+            <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: #fafafa; border: 1px solid #ddd;">
+                <span style="font-size: 1.2rem;">{{ loop.index }}. {{ entry.customer_name }}</span>
+                {% if user.is_authenticated and user.is_admin %}
+                    <form action="{{ url_for('views.delete_queue', id=entry.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" style="background-color: #ff4444;">Delete</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+

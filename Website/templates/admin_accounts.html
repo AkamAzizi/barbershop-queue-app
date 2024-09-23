@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Accounts{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>All User Accounts</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Admin Status</th>
+                <th>Actions</th> <!-- Added column for actions -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                    <td>
+                        {% if not user.is_admin %}  <!-- Only show delete button if the user is not an admin -->
+                            <form action="{{ url_for('views.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
