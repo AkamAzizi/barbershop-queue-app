@@ -8,6 +8,9 @@
         <h1 class="display-4" style="font-family: 'Permanent Marker', cursive; color: #000000;">Välkommen till Strängnäs Salong</h1>
     </div>
 
+    <h4 class="mt-5">Scan the QR Code:</h4>
+    <img  src=" {{ url_for('static', filename='images/image.png') }}" alt="QR Code" class="img-fluid" style="max-width: 40%; float: left; margin-right: 10px;">
+
     {% if user.is_authenticated %}
         <form method="POST" action="{{ url_for('views.enter_queue') }}" class="mb-4">
             <button type="submit" class="btn btn-success" style="background-color: #0ca339; border-color: #016935;">Enter Queue</button>
@@ -29,7 +32,7 @@
             </li>
         {% endfor %}
     </ul>
+
 </div>
 {% endblock %}
-
 
