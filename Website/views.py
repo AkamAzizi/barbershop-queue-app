@@ -29,10 +29,37 @@ def enter_queue():
         db.session.commit()
         flash('You have been added to the queue!', category='success')
 
-        # Reset the notified status for all entries
-        for entry in QueueEntry.query.all():
-            entry.notified = False
-        db.session.commit()
+
+
+    queue_entries = QueueEntry.query.order_by(QueueEntry.id).all()
+        
+    if len(queue_entries) > 0 and not queue_entries[0].notified:
+        Message.notify_first_person(queue_entries[0].email)
+        queue_entries[0].notified = True
+
+    # Notify the second person, if there's more than 1 person in the queue, and they haven't been notified
+    if len(queue_entries) > 1 and not queue_entries[1].notified:
+        Message.notify_second_person(queue_entries[1].email)
+        queue_entries[1].notified = True
+
+
+    db.session.commit()  
+
+
+    return redirect(url_for('views.home'))
+
+
+@views.route('/delete-all-queue', methods=['POST'])
+@login_required
+def delete_all_queue():
+    if not current_user.is_admin:
+        flash('Access Denied. Only admins can delete entries.', category='error')
+        return redirect(url_for('views.home'))
+
+    # Delete all entries in the queue
+    QueueEntry.query.delete()  # Delete all entries
+    db.session.commit()  # Commit the changes
+    flash('All entries in the queue have been deleted!', category='success')
 
     return redirect(url_for('views.home'))
 
@@ -60,7 +87,8 @@ def delete_queue(id):
 
     Message.reset_notified_status(user_mail)
 
-    Message.notify_second_person()
+    Message.notify_second_person(user_mail)
+    Message.notify_first_person(user_mail)
 
     return redirect(url_for('views.home'))
 

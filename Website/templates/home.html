@@ -3,13 +3,21 @@
 {% block title %}Barbershop Home{% endblock %}
 
 {% block content %}
-<div class="container mt-4 text-center" style="max-width: 800px;">
-    <div class="header">
-        <h1 class="display-4" style="font-family: 'Permanent Marker', cursive; color: #000000;">Välkommen till Strängnäs Salong</h1>
-    </div>
+    <div class="container mt-4 text-center" style="max-width: 800px;">
+        <div class="header">
+            <h1 class="display-4" style="font-family: 'Permanent Marker', cursive; color: #000000;">Välkommen till Strängnäs Salong</h1>
+        </div>
+        {% if user.is_admin %}  <!-- Only show delete button if the user is not an admin -->
+            <h4 class="mt-5">Scan the QR Code:</h4>
+            <img  src=" {{ url_for('static', filename='images/image.png') }}" alt="QR Code" class="img-fluid" style="max-width: 40%; float: left; margin-right: 10px;">
+    {% endif %}
 
-    <h4 class="mt-5">Scan the QR Code:</h4>
-    <img  src=" {{ url_for('static', filename='images/image.png') }}" alt="QR Code" class="img-fluid" style="max-width: 40%; float: left; margin-right: 10px;">
+    {% if user.is_authenticated and user.is_admin %}
+    <form action="{{ url_for('views.delete_all_queue') }}" method="POST" class="mb-4">
+        <button type="submit" class="btn btn-danger">RENSA KÖ</button>
+    </form>
+    {% endif %}
+
 
     {% if user.is_authenticated %}
         <form method="POST" action="{{ url_for('views.enter_queue') }}" class="mb-4">
@@ -26,7 +34,7 @@
                 <span style="font-size: 1.2rem;">{{ loop.index }}. {{ entry.customer_name }}</span>
                 {% if user.is_authenticated and user.is_admin %}
                     <form action="{{ url_for('views.delete_queue', id=entry.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" style="background-color: #ff4444;">Delete</button>
+                        <button type="submit" class="btn btn-danger btn-sm" style="background-color: #ff4444;">Ta Bort</button>
                     </form>
                 {% endif %}
             </li>

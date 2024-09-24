@@ -23,7 +23,7 @@ def send_email(to_email, subject, body):
     except Exception as e:
         print(f"Error sending email: {e}")
 
-def notify_second_person():
+def notify_second_person(email):
     queue_entries = QueueEntry.query.all()
 
     if len(queue_entries) > 1:  # Check if there is a second person in the queue
@@ -31,8 +31,24 @@ def notify_second_person():
         
         # Check if the notification has already been sent
         if not second_person.notified:
-            send_email(second_person.email, "DROP IN", "DET ÄR ENDAST 1 PERSON FÖRE DIG")
+            send_email(second_person.email, "DROP IN", "Kö-plats: 2")
             second_person.notified = True  # Update the notification status
+            db.session.commit()  # Commit the change to the database
+        else:
+            print("Second person has already been notified.")
+    else:
+        print("Not enough people in the queue to notify the second person.")
+
+def notify_first_person(email):
+    queue_entries = QueueEntry.query.all()
+
+    if len(queue_entries) > 1:  # Check if there is a second person in the queue
+        first_person = queue_entries[0]  # Get the second person in the queue
+        
+        # Check if the notification has already been sent
+        if not first_person.notified:
+            send_email(first_person.email, "DROP IN", "Kö-plats: 1")
+            first_person.notified = True  # Update the notification status
             db.session.commit()  # Commit the change to the database
         else:
             print("Second person has already been notified.")
